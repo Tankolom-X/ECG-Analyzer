@@ -1,36 +1,15 @@
-name: build
+name: build-and-release
 
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [created]
 
 jobs:
-  clean-build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          lfs: true  # Включаем Git LFS
-
-      - name: Clean build directory
-        run: |
-          if [ -d "build" ]; then
-            rm -rf build/*
-            echo "Cleaned build/"
-          else
-            mkdir -p build
-            echo "Created build/"
-          fi
-
-      - name: Commit empty build dir (if needed)
-        if: github.ref == 'refs/heads/main'
-        run: |
-          git add build/
-          git commit -m "ci: clean build directory" || echo "No changes to commit"
-          git push || echo "Nothing to push"
-
   windows-build:
-    needs: clean-build
     runs-on: windows-latest
     strategy:
       matrix:
@@ -61,19 +40,18 @@ jobs:
       - name: Zip the exe
         shell: pwsh
         run: |
-          cd D:\a\ECG-Analyzer\ECG-Analyzer\dist
-          7z a -tzip -r0 ..\build\ECG-Analyzer_windows.zip ElectricAxisCalculator.exe ECGAnalyzer.exe
+          mkdir -p build
+          cd dist
+          7z a -tzip -r0 ../build/ECG-Analyzer_windows.zip ElectricAxisCalculator.exe ECGAnalyzer.exe
 
-      - name: Upload artifact ElectricAxisCalculator
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 'build_windows'
-          path: 'D:\a\ECG-Analyzer\ECG-Analyzer\build\ECG-Analyzer_windows.zip'
+          name: ECG-Analyzer_windows
+          path: build/ECG-Analyzer_windows.zip
           retention-days: 1
 
-
   macos-build:
-    needs: clean-build
     runs-on: macos-13
     strategy:
       matrix:
@@ -98,21 +76,20 @@ jobs:
       - name: Create a binary ElectricAxisCalculator
         run: pyinstaller -F ElectricAxisCalculator.py
 
-      - name: Zip the binary ElectricAxisCalculator
+      - name: Zip the binary
         run: |
-          ls -l
-          cd /Users/runner/work/ECG-Analyzer/ECG-Analyzer/dist
+          mkdir -p build
+          cd dist
           7z a -tzip -r0 ../build/ECG-Analyzer_macos.zip ElectricAxisCalculator ECGAnalyzer
 
-      - name: Upload artifact ElectricAxisCalculator
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 'build_macos'
-          path: '/Users/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECG-Analyzer_macos.zip'
+          name: ECG-Analyzer_macos
+          path: build/ECG-Analyzer_macos.zip
           retention-days: 1
 
   linux-build:
-    needs: clean-build
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -139,48 +116,41 @@ jobs:
 
       - name: Zip the binary
         run: |
-          ls -l
-          cd /home/runner/work/ECG-Analyzer/ECG-Analyzer/dist
+          mkdir -p build
+          cd dist
           7z a -tzip -r0 ../build/ECG-Analyzer_linux.zip ECGAnalyzer ElectricAxisCalculator
 
-      - name: Upload artifact ElectricAxisCalculator
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 'build_linux'
-          path: '/home/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECG-Analyzer_linux.zip'
+          name: ECG-Analyzer_linux
+          path: build/ECG-Analyzer_linux.zip
           retention-days: 1
 
-
-  commit-build-files:
+  create-release:
     needs: [windows-build, macos-build, linux-build]
     runs-on: ubuntu-latest
 
+    # Выполнять только при создании тега
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
         with:
-          lfs: true
-          fetch-depth: 0  # Полный history для Git LFS
+          path: artifacts
 
-      - uses: actions/download-artifact@v4
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          path: artifacts/
-
-      - name: Set up Git LFS
-        run: |
-          git lfs install
-          git lfs track "*.zip"
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-      - name: Move artifacts to build/
-        run: |
-          mkdir -p build/
-          mv artifacts/build_windows/ECG-Analyzer_windows.zip build/
-          mv artifacts/build_macos/ECG-Analyzer_macos.zip build/
-          mv artifacts/build_linux/ECG-Analyzer_linux.zip build/
-
-      - name: Commit build files
-        run: |
-          git add build/ .gitattributes
-          git commit -m "build: Update binaries (LFS)"
-          git push
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            Automated release for version ${{ github.ref_name }}
+            Contains builds for Windows, macOS and Linux
+          files: |
+            artifacts/ECG-Analyzer_windows/ECG-Analyzer_windows.zip
+            artifacts/ECG-Analyzer_macos/ECG-Analyzer_macos.zip
+            artifacts/ECG-Analyzer_linux/ECG-Analyzer_linux.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
