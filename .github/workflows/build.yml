@@ -104,17 +104,17 @@ jobs:
           pip install pyinstaller
           pip install -r requirements.txt
 
-      - name: Create a binary
+      - name: Create a binary ECGAnalyzer
         run: pyinstaller -F ECGAnalyzer.py
 
       - name: Create a binary ElectricAxisCalculator
         run: pyinstaller -F ElectricAxisCalculator.py
 
-      - name: Zip the binary ElectricAxisCalculator
+      - name: Zip the binary
         run: |
           ls -l
           cd /home/runner/work/ECG-Analyzer/ECG-Analyzer/dist
-          7z a -tzip -r0 ../build/ECGAnalyzer_linux.zip ECGAnalyzer ElectricAxisCalculator
+          7z a -tzip -r0 ../build/ECG-Analyzer_linux.zip ECGAnalyzer ElectricAxisCalculator
 
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
@@ -138,6 +138,6 @@ jobs:
         with:
           commit_message: 'build: updated binaries'
           branch: main
-          file_pattern: build\ECG-Analyzer_*.zip
+          file_pattern: build_*\ECG-Analyzer_*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
