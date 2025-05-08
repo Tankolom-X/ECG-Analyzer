@@ -6,7 +6,7 @@
       <thead>
          <th>
             <p align="center">
-               <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_windows.zip?raw=True" target="_blank">
+               <a href="https://github.com/Tankolom-X/ECG-Analyzer/releases/latest/download/ECG-Analyzer_windows.zip" target="_blank">
                   <picture>
                      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/windows_white.png">
                      <source media="(prefers-color-scheme: light)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/windows.png">
@@ -17,7 +17,7 @@
          </th>
          <th>
             <p align="center">
-               <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_macos.zip?raw=True" target="_blank">
+               <a href="https://github.com/Tankolom-X/ECG-Analyzer/releases/latest/download/ECG-Analyzer_macos.zip" target="_blank">
                   <picture>
                      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/apple_white.png">
                      <source media="(prefers-color-scheme: light)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/apple.png">
@@ -28,7 +28,7 @@
          </th>
          <th>
             <p align="center">
-               <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_linux.zip?raw=True" target="_blank">
+               <a href="https://github.com/Tankolom-X/ECG-Analyzer/releases/latest/download/ECG-Analyzer_linux.zip" target="_blank">
                   <picture>
                      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/linux_white.png">
                      <source media="(prefers-color-scheme: light)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/linux.png">
@@ -40,13 +40,13 @@
       </thead>
       <tbody>
          <th>
-            <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_windows.zip?raw=True">Download</a>
+            <a href="https://github.com/Tankolom-X/ECG-Analyzer/releases/latest/download/ECG-Analyzer_windows.zip">Download</a>
          </th>
          <th>
-            <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_macos.zip?raw=True">Download</a>
+            <a href="https://github.com/Tankolom-X/ECG-Analyzer/releases/latest/download/ECG-Analyzer_macos.zip">Download</a>
          </th>
          <th>
-            <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_linux.zip?raw=True">Download</a>
+            <a href="https://github.com/Tankolom-X/ECG-Analyzer/releases/latest/download/ECG-Analyzer_linux.zip">Download</a>
          </th>
       </tbody>
    </table>
