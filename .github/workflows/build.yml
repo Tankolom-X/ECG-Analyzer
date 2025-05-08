@@ -35,7 +35,7 @@ jobs:
           7z a -tzip -r0 D:\a\ECG-Analyzer\ECG-Analyzer\build\ECGAnalyzer_windows.zip D:\a\ECG-Analyzer\ECG-Analyzer\dist\ECGAnalyzer.exe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'build'
           path: '.\build\ECGAnalyzer_windows.zip'
@@ -51,7 +51,7 @@ jobs:
           7z a -tzip -r0 D:\a\ECG-Analyzer\ECG-Analyzer\build\ElectricAxisCalculator_windows.zip D:\a\ECG-Analyzer\ECG-Analyzer\dist\ElectricAxisCalculator.exe
 
       - name: Upload artifact ElectricAxisCalculator
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'build'
           path: '.\build\ElectricAxisCalculator_windows.zip'
@@ -86,7 +86,7 @@ jobs:
           7z a -tzip -r0 /Users/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECGAnalyzer_macos.zip /Users/runner/work/ECG-Analyzer/ECG-Analyzer/dist/ECGAnalyzer
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'build'
           path: './build/ECGAnalyzer_macos.zip'
@@ -101,7 +101,7 @@ jobs:
           7z a -tzip -r0 /Users/runner/work/ECG-Analyzer/ECG-Analyzer/build/ElectricAxisCalculator_macos.zip /Users/runner/work/ECG-Analyzer/ECG-Analyzer/dist/ElectricAxisCalculator
 
       - name: Upload artifact ElectricAxisCalculator
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'build'
           path: './build/ElectricAxisCalculator_macos.zip'
@@ -135,7 +135,7 @@ jobs:
           7z a -tzip -r0 /home/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECGAnalyzer_linux.zip /home/runner/work/ECG-Analyzer/ECG-Analyzer/dist/ECGAnalyzer
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'build'
           path: './build/ECGAnalyzer_linux.zip'
@@ -150,7 +150,7 @@ jobs:
           7z a -tzip -r0 /home/runner/work/ECG-Analyzer/ECG-Analyzer/build/ElectricAxisCalculator_linux.zip /home/runner/work/ECG-Analyzer/ECG-Analyzer/dist/ElectricAxisCalculator
 
       - name: Upload artifact ElectricAxisCalculator
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'build'
           path: './build/ElectricAxisCalculator_linux.zip'
@@ -164,10 +164,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'build: updated binaries'
           branch: main
