@@ -5,7 +5,32 @@ on:
     branches: [ main ]
 
 jobs:
+  clean-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          lfs: true  # Включаем Git LFS
+
+      - name: Clean build directory
+        run: |
+          if [ -d "build" ]; then
+            rm -rf build/*
+            echo "Cleaned build/"
+          else
+            mkdir -p build
+            echo "Created build/"
+          fi
+
+      - name: Commit empty build dir (if needed)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git add build/
+          git commit -m "ci: clean build directory" || echo "No changes to commit"
+          git push || echo "Nothing to push"
+
   windows-build:
+    needs: clean-build
     runs-on: windows-latest
     strategy:
       matrix:
@@ -48,6 +73,7 @@ jobs:
 
 
   macos-build:
+    needs: clean-build
     runs-on: macos-13
     strategy:
       matrix:
@@ -86,6 +112,7 @@ jobs:
           retention-days: 1
 
   linux-build:
+    needs: clean-build
     runs-on: ubuntu-latest
     strategy:
       matrix:
