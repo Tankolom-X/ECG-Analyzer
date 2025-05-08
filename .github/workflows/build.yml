@@ -2,7 +2,6 @@ name: build-and-release
 
 on:
   push:
-    branches: [ main ]  # Сборка при пуше в main (но без создания релиза)
     tags:  # Активирует релиз только при пуше тега (v*)
     - 'v*'  # Например: v1.0.0, v2.1.3 и т.д.
   pull_request:
