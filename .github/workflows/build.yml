@@ -130,14 +130,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+        with:
+          lfs: true  # Включает поддержку Git LFS
+          persist-credentials: true
 
       - uses: actions/download-artifact@v4
+
+      - name: Set up Git LFS
+        run: |
+          git lfs install
+          git lfs track "*.zip"
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: 'build: updated binaries'
+          commit_message: 'build: updated binaries (LFS)'
           branch: main
-          file_pattern: build_*\ECG-Analyzer_*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
