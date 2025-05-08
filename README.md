@@ -2,6 +2,57 @@
 
 Программы, облегчающие анализ ЭКГ при выполнении лабораторной работы на снятие 1 и 3 отведений и нахождение электрической оси сердца.
 
+<table>
+      <thead>
+         <th>
+            <p align="center">
+               <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_windows.zip?raw=True" target="_blank">
+                  <picture>
+                     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/windows_white.png">
+                     <source media="(prefers-color-scheme: light)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/windows.png">
+                     <img alt="windows" src="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/windows.png">
+                  </picture>
+               </a>
+            </p>
+         </th>
+         <th>
+            <p align="center">
+               <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_macos.zip?raw=True" target="_blank">
+                  <picture>
+                     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/apple_white.png">
+                     <source media="(prefers-color-scheme: light)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/apple.png">
+                     <img alt="apple" src="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/apple.png">
+                  </picture>
+               </a>
+            </p>
+         </th>
+         <th>
+            <p align="center">
+               <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_linux.zip?raw=True" target="_blank">
+                  <picture>
+                     <source media="(prefers-color-scheme: dark)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/linux_white.png">
+                     <source media="(prefers-color-scheme: light)" srcset="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/linux.png">
+                     <img alt="linux" src="https://github.com/Tankolom-X/CommitDraw/blob/1.x/media/os_icons/linux.png">
+                  </picture>
+               </a>
+            </p>
+         </th>
+      </thead>
+      <tbody>
+         <th>
+            <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_windows.zip?raw=True">Download</a>
+         </th>
+         <th>
+            <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_macos.zip?raw=True">Download</a>
+         </th>
+         <th>
+            <a href="https://github.com/Tankolom-X/ECG-Analyzer/blob/main/build/ECG-Analyzer_linux.zip?raw=True">Download</a>
+         </th>
+      </tbody>
+   </table>
+
+   <br>
+
 ## ECGAnalyzer
 Позволяет визуализировать данные, полученные при снятии ЭКГ, и убрать часть помех, а также найти изолинию. Находит предварительные амплитуды зубцов и длительности сегментов.
 Принимает на входе полный путь до .txt файла - результата экспорта данных ЭКГ.
@@ -14,5 +65,5 @@
 ![ECG_after](https://github.com/Tankolom-X/ECG-Analyzer/blob/main/media/ECG_after.jpg?raw=True "ECG_after")
 
 ## ElectricAxisCalculator
-Позволяет найти электрическую ось сердца по средним значениям амплитуд зубцов Q, R, S 1 и 3 отведений.
+Позволяет найти электрическую ось сердца по средним значениям амплитуд зубцов Q, R, S 1 и 3 отведений.\
 ![ECG_axis](https://github.com/Tankolom-X/ECG-Analyzer/blob/main/media/ECG_axis.jpg?raw=True "ECG_axis")
