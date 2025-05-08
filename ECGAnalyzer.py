@@ -1,6 +1,3 @@
-from idlelib.replace import replace
-from os import remove
-
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import butter, medfilt, sosfiltfilt, find_peaks, savgol_filter
