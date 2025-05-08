@@ -138,6 +138,6 @@ jobs:
         with:
           commit_message: 'build: updated binaries'
           branch: main
-          file_pattern: build_*\ECG-Analyzer_*.zip
+          file_pattern: ECG-Analyzer_*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
