@@ -42,7 +42,7 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build_w'
           path: 'D:\a\ECG-Analyzer\ECG-Analyzer\build\ECG-Analyzer_windows.zip'
           retention-days: 1
 
@@ -81,7 +81,7 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build_m'
           path: '/Users/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECG-Analyzer_macos.zip'
           retention-days: 1
 
@@ -119,7 +119,7 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build_l'
           path: '/home/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECG-Analyzer_linux.zip'
           retention-days: 1
 
@@ -138,6 +138,6 @@ jobs:
         with:
           commit_message: 'build: updated binaries'
           branch: main
-          file_pattern: build\ECG-Analyzer_*.zip
+          file_pattern: build_*\ECG-Analyzer_*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
