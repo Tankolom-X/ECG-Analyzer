@@ -37,7 +37,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build1'
           path: '.\build\ECGAnalyzer_windows.zip'
           retention-days: 1
 
@@ -53,7 +53,7 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build2'
           path: '.\build\ElectricAxisCalculator_windows.zip'
           retention-days: 1
 
@@ -88,7 +88,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build1'
           path: './build/ECGAnalyzer_macos.zip'
           retention-days: 1
 
@@ -103,7 +103,7 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build2'
           path: './build/ElectricAxisCalculator_macos.zip'
           retention-days: 1
 
@@ -137,7 +137,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build1'
           path: './build/ECGAnalyzer_linux.zip'
           retention-days: 1
 
@@ -152,7 +152,7 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build'
+          name: 'build2'
           path: './build/ElectricAxisCalculator_linux.zip'
           retention-days: 1
 
