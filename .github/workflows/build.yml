@@ -1,0 +1,176 @@
+name: build
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  windows-build:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: [ "3.11" ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        shell: pwsh
+        run: | 
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Create an exe ECGAnalyzer
+        shell: pwsh
+        run: pyinstaller -F ECGAnalyzer.py
+
+      - name: Zip the exe
+        shell: pwsh
+        run: |
+          7z a -tzip -r0 D:\a\ECG-Analyzer\ECG-Analyzer\build\ECGAnalyzer_windows.zip D:\a\ECG-Analyzer\ECG-Analyzer\dist\ECGAnalyzer.exe
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'build'
+          path: '.\build\ECGAnalyzer_windows.zip'
+          retention-days: 1
+
+      - name: Create an exe ElectricAxisCalculator
+        shell: pwsh
+        run: pyinstaller -F ElectricAxisCalculator.py
+
+      - name: Zip the exe ElectricAxisCalculator
+        shell: pwsh
+        run: |
+          7z a -tzip -r0 D:\a\ECG-Analyzer\ECG-Analyzer\build\ElectricAxisCalculator_windows.zip D:\a\ECG-Analyzer\ECG-Analyzer\dist\ElectricAxisCalculator.exe
+
+      - name: Upload artifact ElectricAxisCalculator
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'build'
+          path: '.\build\ElectricAxisCalculator_windows.zip'
+          retention-days: 1
+
+
+  macos-build:
+    runs-on: macos-13
+    strategy:
+      matrix:
+        python-version: [ "3.11" ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Create a binary
+        run: pyinstaller -F ECGAnalyzer.py
+
+      - name: Zip the binary
+        run: |
+          ls -l
+          7z a -tzip -r0 /Users/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECGAnalyzer_macos.zip /Users/runner/work/ECG-Analyzer/ECG-Analyzer/dist/ECGAnalyzer
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'build'
+          path: './build/ECGAnalyzer_macos.zip'
+          retention-days: 1
+
+      - name: Create a binary ElectricAxisCalculator
+        run: pyinstaller -F ElectricAxisCalculator.py
+
+      - name: Zip the binary ElectricAxisCalculator
+        run: |
+          ls -l
+          7z a -tzip -r0 /Users/runner/work/ECG-Analyzer/ECG-Analyzer/build/ElectricAxisCalculator_macos.zip /Users/runner/work/ECG-Analyzer/ECG-Analyzer/dist/ElectricAxisCalculator
+
+      - name: Upload artifact ElectricAxisCalculator
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'build'
+          path: './build/ElectricAxisCalculator_macos.zip'
+          retention-days: 1
+
+  linux-build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [ "3.11" ]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+
+      - name: Create a binary
+        run: pyinstaller -F ECGAnalyzer.py
+
+      - name: Zip the binary
+        run: |
+          ls -l
+          7z a -tzip -r0 /home/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECGAnalyzer_linux.zip /home/runner/work/ECG-Analyzer/ECG-Analyzer/dist/ECGAnalyzer
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'build'
+          path: './build/ECGAnalyzer_linux.zip'
+          retention-days: 1
+
+      - name: Create a binary ElectricAxisCalculator
+        run: pyinstaller -F ElectricAxisCalculator.py
+
+      - name: Zip the binary ElectricAxisCalculator
+        run: |
+          ls -l
+          7z a -tzip -r0 /home/runner/work/ECG-Analyzer/ECG-Analyzer/build/ElectricAxisCalculator_linux.zip /home/runner/work/ECG-Analyzer/ECG-Analyzer/dist/ElectricAxisCalculator
+
+      - name: Upload artifact ElectricAxisCalculator
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'build'
+          path: './build/ElectricAxisCalculator_linux.zip'
+          retention-days: 1
+
+
+  Commit-changes:
+    needs: [windows-build, macos-build, linux-build]
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'build: updated binaries'
+          branch: main
+          file_pattern: build\CommitDraw_*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
