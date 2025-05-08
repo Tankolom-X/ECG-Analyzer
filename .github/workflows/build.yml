@@ -36,15 +36,14 @@ jobs:
       - name: Zip the exe
         shell: pwsh
         run: |
-          mkdir -p build
-          cd dist
-          7z a -tzip -r0 ../build/ECG-Analyzer_windows.zip ElectricAxisCalculator.exe ECGAnalyzer.exe
+          cd D:\a\ECG-Analyzer\ECG-Analyzer\dist
+          7z a -tzip -r0 ..\build\ECG-Analyzer_windows.zip ElectricAxisCalculator.exe ECGAnalyzer.exe
 
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: build_windows
-          path: build/ECG-Analyzer_windows.zip
+          name: 'build_windows'
+          path: 'build\ECG-Analyzer_windows.zip'
           retention-days: 1
 
 
@@ -75,15 +74,15 @@ jobs:
 
       - name: Zip the binary ElectricAxisCalculator
         run: |
-          mkdir -p build
-          cd dist
+          ls -l
+          cd /Users/runner/work/ECG-Analyzer/ECG-Analyzer/dist
           7z a -tzip -r0 ../build/ECG-Analyzer_macos.zip ElectricAxisCalculator ECGAnalyzer
 
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: build_macos
-          path: build/ECG-Analyzer_macos.zip
+          name: 'build_macos'
+          path: 'build/ECG-Analyzer_macos.zip'
           retention-days: 1
 
   linux-build:
@@ -113,38 +112,32 @@ jobs:
 
       - name: Zip the binary
         run: |
-          mkdir -p build
-          cd dist
+          ls -l
+          cd /home/runner/work/ECG-Analyzer/ECG-Analyzer/dist
           7z a -tzip -r0 ../build/ECG-Analyzer_linux.zip ECGAnalyzer ElectricAxisCalculator
 
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: build_linux
-          path: build/ECG-Analyzer_linux.zip
+          name: 'build_linux'
+          path: 'build/ECG-Analyzer_linux.zip'
           retention-days: 1
 
 
-  commit-changes:
+  Commit-changes:
     needs: [windows-build, macos-build, linux-build]
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
 
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: build/
+      - uses: actions/download-artifact@v4
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'build: updated binaries'
           branch: main
-          file_pattern: 'build/ECG-Analyzer_*.zip'
-          add_options: '-f'
+          file_pattern: build/ECG-Analyzer_*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
