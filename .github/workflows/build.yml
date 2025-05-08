@@ -42,7 +42,7 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build_w'
+          name: 'build_windows'
           path: 'D:\a\ECG-Analyzer\ECG-Analyzer\build\ECG-Analyzer_windows.zip'
           retention-days: 1
 
@@ -81,7 +81,7 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build_m'
+          name: 'build_macos'
           path: '/Users/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECG-Analyzer_macos.zip'
           retention-days: 1
 
@@ -119,32 +119,41 @@ jobs:
       - name: Upload artifact ElectricAxisCalculator
         uses: actions/upload-artifact@v4
         with:
-          name: 'build_l'
+          name: 'build_linux'
           path: '/home/runner/work/ECG-Analyzer/ECG-Analyzer/build/ECG-Analyzer_linux.zip'
           retention-days: 1
 
 
-  Commit-changes:
+  commit-build-files:
     needs: [windows-build, macos-build, linux-build]
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
         with:
-          lfs: true  # Включает поддержку Git LFS
-          persist-credentials: true
+          lfs: true
+          fetch-depth: 0  # Полный history для Git LFS
 
       - uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
 
       - name: Set up Git LFS
         run: |
           git lfs install
           git lfs track "*.zip"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'build: updated binaries (LFS)'
-          branch: main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Move artifacts to build/
+        run: |
+          mkdir -p build/
+          mv artifacts/build_windows/ECG-Analyzer_windows.zip build/
+          mv artifacts/build_macos/ECG-Analyzer_macos.zip build/
+          mv artifacts/build_linux/ECG-Analyzer_linux.zip build/
+
+      - name: Commit build files
+        run: |
+          git add build/ .gitattributes
+          git commit -m "build: Update binaries (LFS)"
+          git push
