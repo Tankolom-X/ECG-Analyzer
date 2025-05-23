@@ -18,7 +18,7 @@ class ECGProcessor:
         self.ecg_analysis = None
 
     def load_data(self) -> None:
-        """Загрузка и предварительная обработка данных ЭКГ (уже в мВ)"""
+        """Загрузка и предварительная обработка данных ЭКГ"""
         try:
             df = pd.read_csv(self.file_path, sep=';', header=None,
                              names=['time_us', 'lead1', 'lead3'],
@@ -50,14 +50,14 @@ class ECGProcessor:
             self.fs = 1_000_000 / np.median(np.diff(df['time_us'].values))
 
     def process_signals(self) -> None:
-        """Обработка и фильтрация сигналов ЭКГ (данные уже в мВ)"""
+        """Обработка и фильтрация сигналов ЭКГ"""
 
         def normalize_and_filter(signal: np.ndarray) -> np.ndarray:
-            """Фильтрация сигнала (только центрирование, без масштабирования)"""
+            """Фильтрация сигнала"""
             # Центрирование сигнала
             signal = signal - np.median(signal)
 
-            # Каскадная фильтрация
+            # Медианная фильтрация
             signal = medfilt(signal, 5)
 
             # Удаление базовой линии
@@ -86,8 +86,56 @@ class ECGProcessor:
         self.lead_I = normalize_and_filter(self.lead_I)
         self.lead_III = normalize_and_filter(self.lead_III)
 
+    def calculate_electrical_axis(self, Q1: float, R1: float, S1: float,
+                                  Q3: float, R3: float, S3: float) -> float:
+        """Расчет электрической оси по треугольнику Эйнтховена"""
+        sum_I = R1 - (abs(Q1) + abs(S1))
+        sum_III = R3 - (abs(Q3) + abs(S3))
+
+        # Координаты вершин треугольника Эйнтховена
+        A = np.array([-1, 0])  # Правая рука
+        B = np.array([1, 0])  # Левая рука
+        C = np.array([0, -np.sqrt(3)])  # Левая нога
+
+        # Центр треугольника
+        O = np.array([0, -np.sqrt(3) / 3])
+
+        # Точки проекции центра на стороны
+        O1 = np.array([0, 0])  # Середина AB (I отведение)
+        O3 = np.array([0.5, -np.sqrt(3) / 2])  # Середина BC (III отведение)
+
+        # Масштабирование сумм
+        scale_factor = 0.2
+        X1 = O1 + np.array([sum_I * scale_factor, 0])
+
+        BC_vector = C - B
+        BC_unit_vector = BC_vector / np.linalg.norm(BC_vector)
+        X3 = O3 + sum_III * scale_factor * BC_unit_vector
+
+        # Расчет перпендикуляров
+        perp_X3_dir = np.array([BC_vector[1], -BC_vector[0]])
+        perp_X3_dir = perp_X3_dir / np.linalg.norm(perp_X3_dir)
+
+        # Точка пересечения перпендикуляров
+        m = perp_X3_dir[1] / perp_X3_dir[0]
+        x_k = X1[0]
+        y_k = X3[1] + m * (x_k - X3[0])
+        K = np.array([x_k, y_k])
+
+        # Вектор электрической оси
+        OK_vector = K - O
+
+        # Расчет угла
+        angle_deg = np.degrees(np.arctan2(OK_vector[1], OK_vector[0]))
+        angle_deg = angle_deg % 360
+        if angle_deg > 180:
+            angle_deg -= 360
+        angle_deg = -angle_deg
+
+        return angle_deg
+
     def detect_waveforms(self, signal: np.ndarray, peaks: np.ndarray) -> Dict[str, List[float]]:
-        """Улучшенная детекция всех зубцов и интервалов для данных в мВ"""
+        """Детекция зубцов и интервалов"""
         waveforms = {
             'P': [], 'Q': [], 'R': [], 'S': [], 'T': [],
             'P_dur': [], 'Q_dur': [], 'R_dur': [], 'S_dur': [], 'T_dur': [],
@@ -101,7 +149,7 @@ class ECGProcessor:
             prev_peak = peaks[i - 1]
             current_peak = peak
 
-            # 1. Расчет RR интервала
+            # Расчет RR интервала
             rr_interval = (current_peak - prev_peak) / self.fs
             waveforms['RR'].append(rr_interval)
 
@@ -121,9 +169,11 @@ class ECGProcessor:
             s_candidates = np.where(s_window < np.percentile(s_window, 10))[0]
             s_point = s_search_start + (s_candidates[0] if len(s_candidates) > 0 else np.argmin(s_window))
 
-            # Длительности компонентов QRS
+            # Расчет длительностей компонентов QRS
             q_duration = (current_peak - q_point) / self.fs
-            r_duration = 0.04
+            r_start = q_point + int(0.01 * self.fs)  # Начало R
+            r_end = s_point - int(0.01 * self.fs)  # Конец R
+            r_duration = (r_end - r_start) / self.fs if r_end > r_start else 0.04  # fallback 40 мс
             s_duration = (s_point - current_peak) / self.fs
             qrs_duration = (s_point - q_point) / self.fs
 
@@ -163,12 +213,12 @@ class ECGProcessor:
 
             t_duration = (t_end - t_start) / self.fs
 
-            # 5. Расчет интервалов
+            # Расчет интервалов
             pr_interval = (q_point - p_start) / self.fs
             qt_interval = (t_end - q_point) / self.fs
             st_segment = (t_start - s_point) / self.fs
 
-            # 6. Сохранение параметров
+            # Сохранение параметров
             waveforms['P'].append(signal[p_point])
             waveforms['Q'].append(signal[q_point])
             waveforms['R'].append(signal[current_peak])
@@ -209,8 +259,7 @@ class ECGProcessor:
         peaks, _ = find_peaks(lead_I_window,
                               height=np.percentile(lead_I_window, 90),
                               distance=int(self.fs * 0.3),
-                              prominence=0.15)  # Порог уменьшен для мВ
-
+                              prominence=0.15)
         if len(peaks) < 2:
             self.ecg_analysis = None
             return
@@ -226,9 +275,23 @@ class ECGProcessor:
 
         hr = 60 / np.mean(waveforms_I['RR']) if waveforms_I['RR'] else 0
 
-        avg_qrs_I = np.mean(waveforms_I['R']) if waveforms_I['R'] else 0
-        avg_qrs_III = np.mean(waveforms_III['R']) if waveforms_III['R'] else 0
-        axis = degrees(atan2(avg_qrs_III, avg_qrs_I))
+        # Расчет электрической оси
+        avg_Q_I = np.mean(waveforms_I['Q']) if waveforms_I['Q'] else 0
+        avg_R_I = np.mean(waveforms_I['R']) if waveforms_I['R'] else 0
+        avg_S_I = np.mean(waveforms_I['S']) if waveforms_I['S'] else 0
+
+        avg_Q_III = np.mean(waveforms_III['Q']) if waveforms_III['Q'] else 0
+        avg_R_III = np.mean(waveforms_III['R']) if waveforms_III['R'] else 0
+        avg_S_III = np.mean(waveforms_III['S']) if waveforms_III['S'] else 0
+
+        try:
+            axis = self.calculate_electrical_axis(
+                avg_Q_I, avg_R_I, avg_S_I,
+                avg_Q_III, avg_R_III, avg_S_III
+            )
+        except Exception as e:
+            print(f"Ошибка расчета электрической оси: {str(e)}")
+            axis = 0
 
         rr_std = np.std(waveforms_I['RR']) if waveforms_I['RR'] else 0
         if rr_std > 0.15 * np.mean(waveforms_I['RR']) if waveforms_I['RR'] else 1:
@@ -299,7 +362,6 @@ class ECGProcessor:
                  label='Отведение III', color='#2ca02c', linewidth=1.2)
         ax2.axhline(0, color='red', linestyle='--', linewidth=1, alpha=0.7)
 
-
         ax2.set_xlabel('Время (с)', fontsize=10)
         ax2.set_ylabel('Амплитуда (мВ)', fontsize=10)
         ax2.tick_params(axis='both', which='major', labelsize=9)
@@ -310,7 +372,7 @@ class ECGProcessor:
         plt.show()
 
     def print_report(self) -> None:
-        """Вывод подробного текстового отчета по анализу"""
+        """Вывод отчета"""
         if not self.ecg_analysis:
             print("Не удалось провести анализ - недостаточно данных")
             return

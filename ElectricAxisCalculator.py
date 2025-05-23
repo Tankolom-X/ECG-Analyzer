@@ -18,7 +18,7 @@ def calculate_electrical_axis(Q1, R1, S1, Q3, R3, S3):
     sum_I = round(R1 - (abs(Q1) + abs(S1)), 4)
     sum_III = round(R3 - (abs(Q3) + abs(S3)), 4)
 
-    # Координаты вершин треугольника Эйнтховена (перевернутый треугольник)
+    # Координаты вершин треугольника Эйнтховена
     A = np.array([-1, 0])  # Правая рука
     B = np.array([1, 0])  # Левая рука
     C = np.array([0, -np.sqrt(3)])  # Левая нога
@@ -41,10 +41,10 @@ def calculate_electrical_axis(Q1, R1, S1, Q3, R3, S3):
     BC_unit_vector = BC_vector / np.linalg.norm(BC_vector)
     X3 = O3 + sum_III * scale_factor * BC_unit_vector
 
-    # Перпендикуляры к сторонам через X1 и X3 (внутрь треугольника)
-    perp_X1 = np.array([X1[0], X1[1] - 2])  # Перпендикуляр к AB через X1 (вниз)
+    # Перпендикуляры к сторонам через X1 и X3
+    perp_X1 = np.array([X1[0], X1[1] - 2])  # Перпендикуляр к AB через X1
 
-    # Перпендикуляр к BC через X3 (направлен внутрь треугольника)
+    # Перпендикуляр к BC через X3
     perp_X3_dir = np.array([BC_vector[1], -BC_vector[0]])
     perp_X3_dir = perp_X3_dir / np.linalg.norm(perp_X3_dir)
     perp_X3 = X3 + perp_X3_dir * 2
@@ -58,10 +58,9 @@ def calculate_electrical_axis(Q1, R1, S1, Q3, R3, S3):
     # Вектор электрической оси
     OK_vector = K - O
 
-    # Упрощенный расчет угла между горизонталью и OK
+    # Расчет угла между горизонталью и OK
     angle_deg = np.degrees(np.arctan2(OK_vector[1], OK_vector[0]))
 
-    # Нормализуем угол
     angle_deg = angle_deg % 360
     if angle_deg > 180:
         angle_deg -= 360
@@ -104,7 +103,7 @@ def plot_einthoven_triangle(angle, O, K, A, B, C, X1, X3, perp_X1, perp_X3, O1, 
     ax.plot([O1[0], X1[0]], [O1[1], X1[1]], 'g-', linewidth=2)
     ax.plot([O3[0], X3[0]], [O3[1], X3[1]], 'g-', linewidth=2)
 
-    # Дополнительные линии (O3-A и O1-C)
+    # Дополнительные линии
     ax.plot([O3[0], A[0]], [O3[1], A[1]], '--', color='gray', alpha=0.5)
     ax.plot([O1[0], C[0]], [O1[1], C[1]], '--', color='gray', alpha=0.5)
 
@@ -140,7 +139,7 @@ def plot_einthoven_triangle(angle, O, K, A, B, C, X1, X3, perp_X1, perp_X3, O1, 
 
 if __name__ == "__main__":
     print("Программа для расчета электрической оси сердца")
-    print("Введите амплитуды зубцов (в мВ):")
+    print("Введите амплитуды зубцов (в мВ)")
 
     Q1 = float(input("Q в I отведении (мВ): ").replace(',', '.'))
     R1 = float(input("R в I отведении (мВ): ").replace(',', '.'))
