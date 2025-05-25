@@ -2,6 +2,18 @@
 
 Программы, облегчающие анализ ЭКГ при выполнении лабораторной работы на снятие электрокардиограммы (I и III отведений) и нахождение электрической оси сердца.
 
+<!-- TOC -->
+* [ECG-Analyzer](#ecg-analyzer)
+  * [Основные возможности](#основные-возможности)
+    * [ECGAnalyzer](#ecganalyzer)
+    * [ElectricAxisCalculator](#electricaxiscalculator)
+  * [Как использовать](#как-использовать)
+    * [1. Установка](#1-установка)
+    * [2. Использование](#2-использование)
+      * [2.1. ECGAnalyzer](#21-ecganalyzer)
+      * [2.2. ElectricAxisCalculator](#22-electricaxiscalculator)
+<!-- TOC -->
+
 ## Основные возможности
 
 ### ECGAnalyzer
