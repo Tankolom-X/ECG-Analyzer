@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.signal import butter, medfilt, sosfiltfilt, find_peaks, savgol_filter
 import pandas as pd
-from math import atan2, degrees
 from typing import Dict, List
 from matplotlib.gridspec import GridSpec
 
